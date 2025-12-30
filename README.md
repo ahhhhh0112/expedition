@@ -102,3 +102,75 @@ Apache License 2.0
 
 ---
 *This repo originally forked from [ETCDEVTeam/emerald-explorer](https://github.com/ETCDEVTeam/emerald-explorer).*
+
+### 修改
+
+将expedition\src\hooks下的useChainLis.ts的代码
+
+```
+#这是一个「链列表 Hook」:给整个 Expedition 前端提供一个「当前可用区块链列表」
+export default function () {
+#默认内置了3条链（都是公网） 
+ const [chains, setChains] = React.useState<Chain[]>([
+   {
+     name: "Ethereum Classic",
+     network: "mainnet",
+     rpc: ["https://www.ethercluster.com/etc"],
+   },
+   {
+     name: "Matic",
+     network: "mainnet",
+     rpc: ["https://rpc-mainnet.matic.network"],
+   },
+   {
+     name: "Matic - Mumbai",
+     network: "testnet",
+     rpc: ["https://rpc-mumbai.matic.today"],
+   },
+ ]);
+#这个代码是作者原来的高级设计浏览器启动后从 chainid.network 拉取 全球所有已知区块链的配置
+自动生成“多链浏览器”，但现在的设计太乱了被弃用
+ // uncomment once we add 'chain list provider' concept. This list blows.
+ // useEffect(() => {
+ //   if (chains === undefined) {
+ //     fetch("https://chainid.network/chains.json")
+ //       .then((r) => r.json())
+ //       .then((chainIdNetwork) => {
+ //         const filteredChains = chainIdNetwork.filter((c: Chain) => {
+ //           if (c.rpc.length === 0) {
+ //             return false;
+ //           }
+ //           return true;
+ //         });
+ //         if (chains) {
+ //           setChains(mergeChainSets(chains, filteredChains));
+ //         } else {
+ //           setChains(filteredChains);
+ //         }
+ //       });
+ //   }
+ // }, [chains]);
+ return [chains, setChains];
+}
+```
+
+改成
+
+```
+import { IChain as Chain } from "../models/chain";
+import React from "react";
+
+export default function () {
+  const [chains, setChains] = React.useState<Chain[]>([
+    {
+      name: "My Private Chain",
+      network: "private",
+      rpc: ["http://127.0.0.1:8545"],
+    },
+  ]);
+
+  return [chains, setChains];
+}
+```
+
+这样就将公共链浏览器改成我的私有链浏览器 
